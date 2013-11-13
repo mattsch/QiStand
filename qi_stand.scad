@@ -5,7 +5,9 @@ charger_h=12.5;
 device_h=138;
 device_coil_h=device_h/2; // this should be the mid point of the coil
 base_extra=5;
+
 rounded_r=2;
+sidesonly=false;
 
 module n5() {
 
@@ -17,7 +19,7 @@ module charger() {
 
     translate([0, 0, 71.5]) {
         difference() {
-            roundedBox([(charger_r*2)+8, charger_h+3, device_h+base_extra], rounded_r, false); 
+            roundedBox([(charger_r*2)+8, charger_h+3, device_h+base_extra], rounded_r, sidesonly); 
             translate([0, 0, (device_coil_h/2)+3]) {
                 cube([90, 50, device_coil_h+1], center=true);
             };
@@ -25,8 +27,8 @@ module charger() {
                 cylinder(h=charger_h+1, r=charger_r, center=true);
                 cylinder(h=charger_h+6, r=charger_r-3, center=true);
             };
-            translate([-6.5, 0, -90]) {
-                cube([13, 6.5, device_h/2], center=false);
+            translate([-6.5, -1, -90]) {
+                cube([13, 7.5, device_h/2], center=false);
             };
             translate([-6.5, 0, -72]) {
                 cube([13, 8.5, 6.5], center=false);
@@ -40,39 +42,59 @@ module base() {
     translate([0, 0, 12.5]) {
         union() {
             difference() {
-                roundedBox([(charger_r*2)+16, 45, 25], rounded_r, false);
-                translate([0, 0, 10]) {
+                // Base
+                roundedBox([(charger_r*2)+16, 45, 25], rounded_r, sidesonly);
+                // Slot for charger
+                translate([0, 1.5, 10]) {
                     rotate(a=[330, 0, 0]) {
-                        cube([(charger_r*2)+9, 15, 25], center=true);
+                        cube([(charger_r*2)+9, 16.5, 25], center=true);
                         };
                     };
-                translate([-6.5, .25, -5]) {
-                    cube([13, 50, 6.5], center=false);
+                // USB cable slot
+                translate([-6.5, 2.25, -13]) {
+                    cube([13, 10, 20.5], center=false);
+                    };
+                translate([-6.5, 11.5, -13]) {
+                    cube([13, 30, 7.5], center=false);
                     };
             };
-            translate([0, -15, 11]) {
-                rotate(a=[330, 0, 0]) {
-                    roundedBox([(charger_r*2)+16, 13, 10], rounded_r, false);
+            // lip for device
+            if(sidesonly=="false") {
+                translate([0, -15, 11]) {
+                    rotate(a=[330, 0, 0]) {
+                        roundedBox([(charger_r*2)+16, 13, 10], rounded_r, sidesonly);
+                    };
+                };
+            } else {
+                translate([0, -15, 11]) {
+                    rotate(a=[330, 0, 0]) {
+                        roundedBox([(charger_r*2)+16, 13, 10], rounded_r, sidesonly);
+                    };
                 };
             };
             translate([28.25, 22.5, -8.5]) {
-                roundedBox([20, 40, 8], rounded_r, false);
+                roundedBox([20, 40, 8], rounded_r, sidesonly);
             };
             translate([-28.25, 22.5, -8.5]) {
-                roundedBox([20, 40, 8], rounded_r, false);
+                roundedBox([20, 40, 8], rounded_r, sidesonly);
             };
         };
     };
 };
 
-module print() {
+module print(parts="all") {
 
-    charger();
-
-    translate([80, 0, 0]) {
+    if(parts=="charger") {
+        charger();
+    } else if(parts=="base") {
         base();
-    };
-};
+    } else if(parts=="all") {
+        charger();
+        translate([80, 0, 0]) {
+            base();
+        }
+    }
+}
 
 module view() {
 
@@ -91,4 +113,13 @@ module view() {
     };
 };
 
-print();
+module main(mode="view", parts="all") {
+
+    if(mode=="print") {
+        print(parts);
+    } else {
+        view();
+    }
+}
+
+main(mode, parts);
