@@ -59,16 +59,21 @@ module base() {
                     };
             };
             // lip for device
-            if(sidesonly=="false") {
+            if(!sidesonly) {
                 translate([0, -15, 11]) {
                     rotate(a=[330, 0, 0]) {
                         roundedBox([(charger_r*2)+16, 13, 10], rounded_r, sidesonly);
                     };
                 };
             } else {
-                translate([0, -15, 11]) {
-                    rotate(a=[330, 0, 0]) {
-                        roundedBox([(charger_r*2)+16, 13, 10], rounded_r, sidesonly);
+                difference() {
+                    translate([0, -16, 10.7]) {
+                        rotate(a=[330, 0, 0]) {
+                            roundedBox([(charger_r*2)+16, 13, 10], rounded_r, false);
+                        };
+                    };
+                    translate([0, -15, 6.2]) {
+                            cube([(charger_r*2)+20, 19, 12.5], center=true);
                     };
                 };
             };
