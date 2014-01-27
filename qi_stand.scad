@@ -2,7 +2,9 @@ use <MCAD/boxes.scad>
 $fn=50;
 charger_r=30.25;
 charger_h=12.5;
-device_h=138;
+orientation="portrait";
+// device_h=69.2; // landscape
+device_h=137.9; // portrait
 device_coil_h=device_h/2; // this should be the mid point of the coil
 base_extra=5;
 
@@ -173,17 +175,25 @@ module view() {
 
     round_base();
 
-    translate([0, -5, 12]) {
-        rotate(a=[330,0,0]) {
-            charger();
+    if(orientation=="landscape") {
+        translate([0, -22, -18]) {
+            rotate(a=[330,0,0]) {
+                charger();
+            };
+        };
+    } else {
+        translate([0, -5, 12]) {
+            rotate(a=[330,0,0]) {
+                charger();
+            };
         };
     };
+        translate([0, 21, 85]) {
+            rotate(a=[330,0,0]) {
+               %n5();
+            };
+        };
 
-    translate([0, 21, 85]) {
-        rotate(a=[330,0,0]) {
-           %n5();
-        };
-    };
 };
 
 module main(mode="view", parts="all") {
