@@ -2,10 +2,12 @@ use <MCAD/boxes.scad>
 $fn=50;
 charger_r=30.25;
 charger_h=12.5;
-orientation="portrait";
-// device_h=69.2; // landscape
-device_h=137.9; // portrait
-device_coil_h=device_h/2; // this should be the mid point of the coil
+orientation=1; // 0 = landscape, 1 = portrait
+device_h=[
+    137.9, // portrait
+    69.2 // landscape
+];
+device_coil_h=device_h[orientation]/2; // this should be the mid point of the coil
 base_extra=5;
 
 rounded_r=2;
@@ -22,7 +24,7 @@ module charger() {
 
     translate([0, 0, 71.5]) {
         difference() {
-            roundedBox([(charger_r*2)+8, charger_h+3, device_h+base_extra], rounded_r, sidesonly); 
+            roundedBox([(charger_r*2)+8, charger_h+3, device_h[orientation]+base_extra], rounded_r, sidesonly); 
             translate([0, 0, (device_coil_h/2)+3]) {
                 cube([90, 50, device_coil_h+1], center=true);
             };
@@ -30,11 +32,13 @@ module charger() {
                 cylinder(h=charger_h+1, r=charger_r, center=true);
                 cylinder(h=charger_h+6, r=charger_r-3, center=true);
             };
+            union() {
             translate([-6.5, -1, -90]) {
-                cube([13, 7.5, device_h/2], center=false);
+                cube([13, 7.5, 100], center=false);
             };
-            translate([-6.5, 0, -72]) {
+            translate([-6.5, 0, -(device_h[orientation]/2+2.5)]) {
                 cube([13, 8.5, 6.5], center=false);
+            };
             };
         };
     };
@@ -175,7 +179,7 @@ module view() {
 
     round_base();
 
-    if(orientation=="landscape") {
+    if(orientation==1) {
         translate([0, -22, -18]) {
             rotate(a=[330,0,0]) {
                 charger();
@@ -196,7 +200,7 @@ module view() {
 
 };
 
-module main(mode="view", parts="all") {
+module main(mode="view", parts="all", orientation=0) {
 
     if(mode=="print") {
         print(parts);
@@ -205,4 +209,4 @@ module main(mode="view", parts="all") {
     }
 }
 
-main(mode, parts);
+main(mode, parts, orientation);
