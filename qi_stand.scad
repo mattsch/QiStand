@@ -11,7 +11,8 @@ sidesonly=false;
 
 module n5() {
 
-    roundedBox([69.2, 8.6, 137.9], 1, false);
+    // roundedBox([69.2, 8.6, 137.9], 1, false); // without case
+    roundedBox([69.2, 11.5, 137.9], 1, false); // with case
 
 };
 
@@ -37,13 +38,73 @@ module charger() {
     };
 };
 
+module round_base() {
+    translate([0, 0, 12.5]) {
+        union() {
+            difference() {
+                // Base
+                translate([0, 0, -12.5]){
+                    cylinder(h=23, r1=charger_r+13, r2=charger_r+9, $fn=128);
+                };
+
+                // Slot for charger
+                translate([0, 1.5, 10]) {
+                    rotate(a=[330, 0, 0]) {
+                        cube([(charger_r*2)+9, 16.5, 25], center=true);
+                        };
+                    };
+
+                // USB cable slot
+                translate([-6.5, 2.25, -10.9]) {
+                    cube([13, 10, 18.5], center=false);
+                    };
+                translate([0, 43.3, -13]) {
+                    // difference() {
+                        rotate(a=[90, 90, 0]) {
+                            cylinder(r=7, h=41, $fn=128);
+                        };
+                    //     translate([-2, -42, -5]){
+                    //         cube([16, 41, 7]);
+                    //     };
+                    // };
+                };
+
+                // Slots for weights
+                translate([18, -14, -13]){
+                    cylinder(r=10, h=10, $fn=128);
+                    };
+                translate([-18, -14, -13]){
+                    cylinder(r=10, h=10, $fn=128);
+                    };
+            };
+
+            // Device lip
+            difference() {
+                translate([-charger_r, -15, 11]) {
+                    rotate(a=[0,90,0]) {
+                        cylinder(h=charger_r*2, r=9, $fn=128);
+                    };
+                };
+                translate([-(charger_r+2), -19, 16]) {
+                    rotate(a=[330,0,0]) {
+                        cube([(charger_r*2)+18, 14, 14]);
+                        translate([0, 11.5, -16]) {
+                            cube([(charger_r*2)+18, 14, 24]);
+                            };
+                        };
+                    };
+            };
+        };
+    };
+};
+
 module base() {
 
     translate([0, 0, 12.5]) {
         union() {
             difference() {
                 // Base
-                roundedBox([(charger_r*2)+16, 45, 25], rounded_r, sidesonly);
+                roundedBox([(charger_r*2)+16, 50, 25], rounded_r, sidesonly);
                 // Slot for charger
                 translate([0, 1.5, 10]) {
                     rotate(a=[330, 0, 0]) {
@@ -60,19 +121,24 @@ module base() {
             };
             // lip for device
             if(!sidesonly) {
-                translate([0, -15, 11]) {
+                translate([0, -15, 10.5]) {
                     rotate(a=[330, 0, 0]) {
-                        roundedBox([(charger_r*2)+16, 13, 10], rounded_r, sidesonly);
+                        roundedBox([(charger_r*2)+16, 18, 11], rounded_r, sidesonly);
+                    };
+                };
+                translate([0, -19, 19]) {
+                    rotate(a=[330, 0, 0]) {
+                        roundedBox([16, 2, 4], 1, sidesonly);
                     };
                 };
             } else {
                 difference() {
-                    translate([0, -16, 10.7]) {
+                    translate([0, -17, 11.2]) {
                         rotate(a=[330, 0, 0]) {
-                            roundedBox([(charger_r*2)+16, 13, 10], rounded_r, false);
+                            roundedBox([(charger_r*2)+16, 15, 11], rounded_r, false);
                         };
                     };
-                    translate([0, -15, 6.2]) {
+                    translate([0, -17, 6.2]) {
                             cube([(charger_r*2)+20, 19, 12.5], center=true);
                     };
                 };
@@ -93,17 +159,19 @@ module print(parts="all") {
         charger();
     } else if(parts=="base") {
         base();
+    } else if(parts=="round_base") {
+        round_base();
     } else if(parts=="all") {
         charger();
         translate([80, 0, 0]) {
-            base();
+            round_base();
         }
     }
 }
 
 module view() {
 
-    base();
+    round_base();
 
     translate([0, -5, 12]) {
         rotate(a=[330,0,0]) {
@@ -111,7 +179,7 @@ module view() {
         };
     };
 
-    translate([0, 22, 85]) {
+    translate([0, 21, 85]) {
         rotate(a=[330,0,0]) {
            %n5();
         };
